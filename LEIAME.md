@@ -1,36 +1,34 @@
-# Advanced Camera Card — tradução PT-BR completa
+# Advanced Camera Card — tradução PT-BR completa e rótulos em português
 
 **Base usada:** Advanced Camera Card (HACS), pasta `/config/www/community/advanced-camera-card`,
 build de 08/11/2026, versão aparente 8.2.0 (detectada no código; confirme na tela do card).
-Arquivo original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzidos; o resto aparecia em inglês).
+Arquivo de idioma original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzidos; o resto aparecia em inglês).
 
-**Modificação:** `lang-pt-BR-dQc_pOO8.js` desta pasta traz os 705 textos em PT-BR
-(432 novos, todos os existentes preservados; "Automatico" não ocorre mais; chaves obsoletas
-`editor.overrides*` removidas). Seções novas: actions, display_modes, key_assigner, media_viewer.
+## O que foi modificado
+- **Tradução** (`lang-pt-BR.traduzido.js`): 705 de 705 textos em PT-BR. 430 novos e 62 antigos
+  corrigidos (ex.: "Casa" → "Posição inicial" no PTZ, "Duplique o ID" → "ID duplicado",
+  "provedor ativo" → "provedor ao vivo", "Upgrade" → "Atualizar", "Snapshot" → "Instantâneo").
+  Nomes próprios e siglas (Frigate, PTZ, go2rtc, Ctrl…) ficam como estão.
+- **Rótulos do Frigate** (só na exibição; Frigate e automações não mudam):
+  car → Carro, motorcycle → Moto, dog → Cachorro, cat → Gato. Outros rótulos aparecem
+  em inglês com inicial maiúscula (ex.: "Person"). Para incluir mais, edite `ROTULOS` no script.
+- **No card (Z:)**, o script altera apenas o `shared-*.js` (2 trechos: referência ao idioma e
+  função de rótulos) e cria `lang-pt-BR-LUCAR<n>.js`. O arquivo de idioma original do card
+  não é alterado. Backups: `shared-*.js.bak-original` e `.gz.bak-original`.
 
-**Instalação:** copiar este arquivo por cima do de mesmo nome em
-`/config/www/community/advanced-camera-card/` (Samba/SSH), limpar o cache do navegador
-(Ctrl+F5 / reiniciar o app) e recarregar o painel.
-
-**Atenção:** o nome do arquivo tem hash. Se o HACS atualizar o card, o nome muda e esta
-tradução deve ser refeita sobre a nova base. Faça backup do original antes de substituir.
-
-## Alterações adicionais (10/11/2026)
-- `lang-pt-BR-dQc_pOO8.js` foi copiado como `lang-pt-BR-LUCAR1.js` (nome novo para furar o cache do navegador)
-  e a referência foi trocada em `shared-DKvQuQy0.js`. O arquivo antigo e o `.bak-original` continuam na pasta.
-- `shared-DKvQuQy0.js`: a função que formata rótulos (`Gy`) agora traduz car → Carro, motorcycle → Moto,
-  dog → Cachorro, cat → Gato (somente na exibição; o Frigate e as automações não mudam).
-  Para incluir outros rótulos, edite o objeto `m` dentro dessa função e regenere o `.gz`
-  (`gzip -9 -c shared-DKvQuQy0.js > shared-DKvQuQy0.js.gz`).
-- Backups dos originais: `shared-DKvQuQy0.js.bak-original` e `shared-DKvQuQy0.js.gz.bak-original`.
-
-## Como refazer após atualizar o card (HACS)
-Arquivos desta pasta: `lang-pt-BR.traduzido.js` (tradução completa) e `aplicar_ptbr.py` (reaplica tudo).
+## Como aplicar / refazer após atualizar o card (HACS)
 ```
 python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
 ```
-O script faz backup `.bak-original` (só na 1ª vez), troca o conteúdo do `lang-pt-BR-*.js`, aplica a
-tradução de rótulos no `shared-*.js` e regenera os `.gz`. É seguro rodar mais de uma vez.
-Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada (peça ao Claude).
-Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste manual.
-Obs.: nesta pasta não há git; a cópia de segurança é esta pasta (OneDrive).
+- Pode rodar quantas vezes quiser. A cada execução o arquivo de idioma ganha um número novo
+  (LUCAR1, LUCAR2…), o que obriga o navegador a baixar a versão nova.
+- Os `.gz` são regenerados (o Home Assistant entrega o `.gz` no lugar do `.js`).
+- **Não precisa reiniciar o Home Assistant.** Basta recarregar o painel (Ctrl+F5). No app,
+  ou se ainda aparecer texto antigo: limpar dados do site / "Limpar cache do frontend".
+- Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada.
+- Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste.
+
+## Recurso do painel
+Configurações → Painéis → Recursos, tipo "Módulo JavaScript". Se o HACS já registrou
+`/hacsfiles/advanced-camera-card/advanced-camera-card.js?hacstag=...`, não duplique. Remova
+`frigate-hass-card.js` se aparecer (legado).
