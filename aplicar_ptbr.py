@@ -50,9 +50,22 @@ if not re.search(r"t===`pt_BR`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + 
     sys.exit("Referência ao idioma pt-BR não encontrada no shared; o código mudou nesta versão.")
 if not re.search(r"t===`pt`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + "`", s):
     print("aviso: mapeamento do idioma 'pt' não encontrado (só afeta quem usa Português de Portugal).")
-grava(os.path.join(pasta, NOVO), open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read())
-for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):  # nomes numerados das versões antigas do script
+traducao = open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read()
+grava(os.path.join(pasta, NOVO), traducao)
+# Atalhos LUCAR1..5: versões antigas do script usavam esses nomes, e um navegador/app que ainda
+# guarde o shared antigo no cache (até 31 dias) os procura. Cada atalho só busca o lang-pt-BR.js
+# atual, sem cache. Quando não precisar mais (a partir de ~22/12/2026), troque para False:
+# o script então apaga os atalhos.
+ATALHOS = True
+for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):
     os.remove(p)
+if ATALHOS:
+    nomes = [n for n in re.findall(r" as (\w+)", re.search(r"export\{(.*)\}", traducao).group(1)) if n != "default"]
+    atalho = ("const m=await import(`" + IMPORT + "`);export const {" + ",".join(nomes) + "}=m;"
+              "export default m.default;\n")
+    for i in range(1, 6):
+        grava(os.path.join(pasta, f"lang-pt-BR-LUCAR{i}.js"), atalho)
+    print("atalhos LUCAR1-5 OK (apontam para", NOVO + ")")
 print("idioma OK:", NOVO, "(sempre baixado do servidor, sem cache)")
 
 # 2) rótulos

@@ -38,8 +38,10 @@ python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
   rodar o script, se um navegador ou celular continuar antigo (ex.: rótulos ou editor), limpe o
   cache uma vez: Edge/Chrome Ctrl+Shift+Del → "Imagens e arquivos em cache"; app iOS/Android:
   Configurações → Companion App → Depuração → "Redefinir cache do frontend".
-- Versões antigas do script usavam `lang-pt-BR-LUCAR<n>.js`; o script atual apaga esses arquivos.
-  Um navegador que ainda guarde o `shared` dessa época mostra o card em inglês até limpar o cache.
+- Versões antigas do script usavam `lang-pt-BR-LUCAR1..5.js`. Para navegadores/apps que ainda
+  guardam o `shared` dessa época (ex.: app do iPhone), esses nomes viraram **atalhos** de 1 linha
+  que buscam o `lang-pt-BR.js` atual, sem cache. **A partir de ~22/12/2026** (31 dias) eles não
+  são mais necessários: troque `ATALHOS = True` para `False` no script e rode de novo.
 - Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada.
 - Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste.
 
