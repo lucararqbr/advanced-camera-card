@@ -59,13 +59,30 @@ grava(os.path.join(pasta, NOVO), traducao)
 ATALHOS = True
 for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):
     os.remove(p)
+# O arquivo de idioma original do card (lang-pt-BR-<hash>.js, tradução incompleta) também vira
+# atalho: um navegador com o shared ORIGINAL em cache (de antes deste script) o procura e
+# mostraria o card metade em inglês. Backup .bak-original; com ATALHOS = False ele é restaurado.
+originais = [p for p in glob.glob(os.path.join(pasta, "lang-pt-BR-*.js"))
+             if not os.path.basename(p).startswith("lang-pt-BR-LUCAR")]
+for p in originais:
+    for ext in (p, p + ".gz"):
+        if os.path.exists(ext) and not os.path.exists(ext + ".bak-original"):
+            shutil.copy2(ext, ext + ".bak-original")
 if ATALHOS:
     nomes = [n for n in re.findall(r" as (\w+)", re.search(r"export\{(.*)\}", traducao).group(1)) if n != "default"]
     atalho = ("const m=await import(`" + IMPORT + "`);export const {" + ",".join(nomes) + "}=m;"
               "export default m.default;\n")
     for i in range(1, 6):
         grava(os.path.join(pasta, f"lang-pt-BR-LUCAR{i}.js"), atalho)
-    print("atalhos LUCAR1-5 OK (apontam para", NOVO + ")")
+    for p in originais:
+        grava(p, atalho)
+    print("atalhos OK: LUCAR1-5 e", ", ".join(os.path.basename(p) for p in originais), "->", NOVO)
+else:
+    for p in originais:
+        for ext in (p, p + ".gz"):
+            if os.path.exists(ext + ".bak-original"):
+                shutil.copy2(ext + ".bak-original", ext)
+    print("atalhos removidos; idioma original do card restaurado")
 print("idioma OK:", NOVO, "(sempre baixado do servidor, sem cache)")
 
 # 2) rótulos
