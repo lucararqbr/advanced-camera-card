@@ -21,23 +21,25 @@ Arquivo de idioma original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzid
   alinha o ícone de "Editor completo". "Título/Ícone (detectado automaticamente)" virou
   "(automático)", para não quebrar a linha.
 - **No card (Z:)**, o script altera apenas `shared-*.js` (referência ao idioma, idioma "pt" e
-  função de rótulos) e `editor-*.js` (CSS da lista), e cria `lang-pt-BR-LUCAR<n>.js`. Os
+  função de rótulos) e `editor-*.js` (CSS da lista), e cria `lang-pt-BR.js` (nome fixo). Os
   arquivos de idioma originais do card não mudam. Backups: `*.bak-original` (.js e .gz).
 
 ## Como aplicar / refazer após atualizar o card (HACS)
 ```
 python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
 ```
-- Pode rodar quantas vezes quiser. A cada execução o arquivo de idioma ganha um número novo
-  (LUCAR1, LUCAR2…), o que obriga o navegador a baixar a versão nova.
+- Pode rodar quantas vezes quiser. A tradução fica sempre em `lang-pt-BR.js`, e o card a
+  importa como `lang-pt-BR.js?v=<hora>`: o endereço muda a cada abertura do painel, então o
+  navegador **sempre baixa a tradução do servidor** (arquivo leve, ~30 KB) e nunca usa o cache.
+  Correções de texto aparecem só com um recarregar do painel.
 - Os `.gz` são regenerados (o Home Assistant entrega o `.gz` no lugar do `.js`).
-- **Não precisa reiniciar o Home Assistant.** Mas o HA manda o navegador guardar os arquivos
-  do card por **31 dias** (`Cache-Control: max-age=2678400`), então um navegador que já abriu o
-  card antes continua com a versão antiga (ex.: Edge com a gaveta de mídia em inglês). Em
-  cada navegador ou celular: limpar "Imagens e arquivos em cache" (Edge/Chrome: Ctrl+Shift+Del)
-  ou, no app, Configurações do app → "Limpar cache do frontend"/"Redefinir cache".
-- As cópias `LUCAR` anteriores não são apagadas (recebem a tradução atual), para não quebrar
-  navegadores que ainda guardam o `shared` antigo.
+- **Não precisa reiniciar o Home Assistant.** Os outros arquivos do card (`shared`, `editor`)
+  o HA manda o navegador guardar por **31 dias** (`Cache-Control: max-age=2678400`). Depois de
+  rodar o script, se um navegador ou celular continuar antigo (ex.: rótulos ou editor), limpe o
+  cache uma vez: Edge/Chrome Ctrl+Shift+Del → "Imagens e arquivos em cache"; app iOS/Android:
+  Configurações → Companion App → Depuração → "Redefinir cache do frontend".
+- Versões antigas do script usavam `lang-pt-BR-LUCAR<n>.js`; o script atual apaga esses arquivos.
+  Um navegador que ainda guarde o `shared` dessa época mostra o card em inglês até limpar o cache.
 - Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada.
 - Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste.
 

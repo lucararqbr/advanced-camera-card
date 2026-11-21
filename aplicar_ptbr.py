@@ -4,9 +4,9 @@ Uso (depois de atualizar o card pelo HACS, ou depois de mudar a tradução):
     python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
 
 O que faz (pode rodar quantas vezes quiser):
- 1. Grava a tradução desta pasta (lang-pt-BR.traduzido.js) como lang-pt-BR-LUCAR<n>.js,
-    com <n> novo a cada execução, e aponta o shared-*.js para ele. O nome novo obriga o
-    navegador a baixar o arquivo de novo (sem cache). O arquivo original do card não é alterado.
+ 1. Grava a tradução desta pasta (lang-pt-BR.traduzido.js) como lang-pt-BR.js e aponta o
+    shared-*.js para ele com "?v=<hora>", para o navegador sempre baixar a versão do servidor
+    (sem cache). O arquivo de idioma original do card não é alterado.
  2. Troca no shared-*.js a função que formata rótulos por uma versão que traduz
     car/motorcycle/dog/cat (edite ROTULOS abaixo para incluir outros).
  3. Corrige no editor-*.js a lista de câmeras/pastas do editor visual (quebrada no HA 2026.10).
@@ -37,27 +37,23 @@ for ext in (sp, sp + ".gz"):
     if os.path.exists(ext) and not os.path.exists(ext + ".bak-original"):
         shutil.copy2(ext, ext + ".bak-original")
 
-# 1) idioma: descobre o arquivo referenciado e grava a tradução com nome novo
-m = re.search(r"\./(lang-pt-BR-[\w-]+\.js)", s)
-if m:  # "pt" (Português de Portugal, escolhido por engano em algum navegador) também usa a tradução PT-BR
-    s = re.sub(r"(t===`pt`\?\w+\[t\]=await import\(`\./)lang-pt-PT-[\w-]+\.js", r"\g<1>" + m.group(1), s)
-    if not re.search(r"t===`pt`\?\w+\[t\]=await import\(`\./lang-pt-BR-", s):
-        print("aviso: mapeamento do idioma 'pt' não encontrado (só afeta quem usa Português de Portugal).")
-if not m:
+# 1) idioma: grava a tradução como lang-pt-BR.js (nome fixo) e faz o shared importá-la com
+#    "?v=<hora atual>". A cada abertura do painel o endereço muda, então o navegador sempre baixa
+#    o arquivo do servidor em vez de usar o cache (o arquivo é leve).
+NOVO = "lang-pt-BR.js"
+IMPORT = "./" + NOVO + "?v=${Date.now()}"
+ref = re.compile(r"\./lang-pt-BR(?:-[\w-]+)?\.js(?:\?v=\$\{Date\.now\(\)\})?")
+# "pt" (Português de Portugal, escolhido por engano em algum navegador) também usa a tradução PT-BR
+s = re.sub(r"(t===`pt`\?\w+\[t\]=await import\(`)\./lang-pt-PT-[\w-]+\.js", r"\g<1>" + IMPORT.replace("\\", "\\\\"), s)
+s, n = ref.subn(lambda _: IMPORT, s)
+if not re.search(r"t===`pt_BR`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + "`", s):
     sys.exit("Referência ao idioma pt-BR não encontrada no shared; o código mudou nesta versão.")
-atual = m.group(1)
-mn = re.fullmatch(r"lang-pt-BR-LUCAR(\d+)\.js", atual)
-novo = f"lang-pt-BR-LUCAR{int(mn.group(1)) + 1 if mn else 1}.js"
-traducao = open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read()
-grava(os.path.join(pasta, novo), traducao)
-s = s.replace("./" + atual, "./" + novo)
-# As cópias anteriores (LUCAR1, LUCAR2…) NÃO são apagadas: o HA manda o navegador guardar estes
-# arquivos por 31 dias, e um navegador com o shared antigo ainda procura o nome anterior.
-# Elas recebem a tradução atual, para que esse navegador também mostre o texto novo.
-for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js")):
-    if os.path.basename(p) != novo:
-        grava(p, traducao)
-print(f"idioma OK: {atual} -> {novo}")
+if not re.search(r"t===`pt`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + "`", s):
+    print("aviso: mapeamento do idioma 'pt' não encontrado (só afeta quem usa Português de Portugal).")
+grava(os.path.join(pasta, NOVO), open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read())
+for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):  # nomes numerados das versões antigas do script
+    os.remove(p)
+print("idioma OK:", NOVO, "(sempre baixado do servidor, sem cache)")
 
 # 2) rótulos
 mapa = ",".join(f"{k}:`{v}`" for k, v in ROTULOS.items())
