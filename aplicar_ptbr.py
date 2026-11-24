@@ -50,6 +50,15 @@ if not re.search(r"t===`pt_BR`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + 
     sys.exit("Referência ao idioma pt-BR não encontrada no shared; o código mudou nesta versão.")
 if not re.search(r"t===`pt`\?\w+\[t\]=await import\(`" + re.escape(IMPORT) + "`", s):
     print("aviso: mapeamento do idioma 'pt' não encontrado (só afeta quem usa Português de Portugal).")
+# Card sempre em PT-BR: ignora o idioma do perfil/navegador/app (que no app iOS pelo acesso
+# externo pode vir como inglês). Com False, o card volta a seguir o idioma do Home Assistant.
+SO_PTBR = True
+sel = re.compile(r"(function \w+\(e\)\{)(?:return`pt_BR`;)?(let t=e=>e\.replace\(`-`,`_`\),n=e\?\.language\?\?e\?\.selectedLanguage;)")
+if not sel.search(s):
+    print("ATENÇÃO: função de idioma não encontrada; 'sempre PT-BR' não aplicado.")
+else:
+    s = sel.sub(lambda m: m.group(1) + ("return`pt_BR`;" if SO_PTBR else "") + m.group(2), s, count=1)
+    print("idioma fixo em PT-BR:", "sim" if SO_PTBR else "não (segue o Home Assistant)")
 traducao = open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read()
 grava(os.path.join(pasta, NOVO), traducao)
 # Atalhos LUCAR1..5: versões antigas do script usavam esses nomes, e um navegador/app que ainda

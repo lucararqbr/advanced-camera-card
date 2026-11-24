@@ -14,6 +14,9 @@ Arquivo de idioma original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzid
   em inglês com inicial maiúscula (ex.: "Person"). Para incluir mais, edite `ROTULOS` no script.
 - **Idioma "pt" (Português de Portugal)** também usa esta tradução. Se um navegador estiver
   com o HA em "Português" em vez de "Português (Brasil)", o card não fica mais pela metade.
+- **Card sempre em PT-BR** (`SO_PTBR = True` no script): o card ignora o idioma do perfil,
+  do navegador e do app e usa sempre a tradução PT-BR (o app iOS pelo acesso externo chegou a
+  mostrar inglês). Com `False`, volta a seguir o idioma do Home Assistant.
 - **Editor visual corrigido para o HA 2026.10**: o card usa `ha-md-list`/`ha-md-list-item`,
   que o HA 2026.10 não tem mais, e a lista de câmeras/pastas no editor aparecia empilhada
   (quebrada). A versão oficial tem o mesmo defeito (o `editor-*.js` é idêntico ao zip do HACS).
