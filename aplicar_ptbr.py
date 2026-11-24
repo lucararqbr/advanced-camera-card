@@ -56,7 +56,7 @@ grava(os.path.join(pasta, NOVO), traducao)
 # guarde o shared antigo no cache (até 31 dias) os procura. Cada atalho só busca o lang-pt-BR.js
 # atual, sem cache. Quando não precisar mais (a partir de ~22/12/2026), troque para False:
 # o script então apaga os atalhos.
-ATALHOS = False
+ATALHOS = True  # necessário com a Cloudflare na frente: celulares guardam o shared antigo
 for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):
     os.remove(p)
 # O arquivo de idioma original do card (lang-pt-BR-<hash>.js, tradução incompleta) também vira

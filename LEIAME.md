@@ -39,9 +39,10 @@ python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
   cache uma vez: Edge/Chrome Ctrl+Shift+Del → "Imagens e arquivos em cache"; app iOS/Android:
   Configurações → Companion App → Depuração → "Redefinir cache do frontend".
 - Versões antigas do script usavam `lang-pt-BR-LUCAR1..5.js`. O script tem a opção `ATALHOS`
-  (hoje `False`): com `True`, esses nomes e o idioma original do card viram atalhos para o
-  `lang-pt-BR.js`, útil se algum aparelho com cache antigo mostrar o card em inglês ou com erro
-  "Failed to fetch … LUCAR". Com `False` (padrão), ficam só os arquivos originais do card.
+  (hoje `True`): esses nomes e o idioma original do card viram atalhos para o `lang-pt-BR.js`.
+  Deixe `True`: pelo acesso externo (Cloudflare), aparelhos com o `shared` antigo em cache
+  pedem o arquivo de idioma original e mostravam o card metade em inglês. Com `False`, ficam
+  só os arquivos originais do card.
 - Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada.
 - Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste.
 
