@@ -61,11 +61,9 @@ else:
     print("idioma fixo em PT-BR:", "sim" if SO_PTBR else "não (segue o Home Assistant)")
 traducao = open(os.path.join(AQUI, "lang-pt-BR.traduzido.js"), encoding="utf8").read()
 grava(os.path.join(pasta, NOVO), traducao)
-# Atalhos LUCAR1..5: versões antigas do script usavam esses nomes, e um navegador/app que ainda
-# guarde o shared antigo no cache (até 31 dias) os procura. Cada atalho só busca o lang-pt-BR.js
-# atual, sem cache. Quando não precisar mais (a partir de ~22/12/2026), troque para False:
-# o script então apaga os atalhos.
-ATALHOS = True  # necessário com a Cloudflare na frente: celulares guardam o shared antigo
+# Atalhos: o arquivo de idioma original do card vira atalho para o lang-pt-BR.js (ver abaixo).
+# Os antigos lang-pt-BR-LUCAR1..5 não são mais criados; o script os apaga se existirem.
+ATALHOS = True  # com a Cloudflare na frente, celulares podem guardar o shared ORIGINAL
 for p in glob.glob(os.path.join(pasta, "lang-pt-BR-LUCAR*.js*")):
     os.remove(p)
 # O arquivo de idioma original do card (lang-pt-BR-<hash>.js, tradução incompleta) também vira
@@ -81,11 +79,9 @@ if ATALHOS:
     nomes = [n for n in re.findall(r" as (\w+)", re.search(r"export\{(.*)\}", traducao).group(1)) if n != "default"]
     atalho = ("const m=await import(`" + IMPORT + "`);export const {" + ",".join(nomes) + "}=m;"
               "export default m.default;\n")
-    for i in range(1, 6):
-        grava(os.path.join(pasta, f"lang-pt-BR-LUCAR{i}.js"), atalho)
     for p in originais:
         grava(p, atalho)
-    print("atalhos OK: LUCAR1-5 e", ", ".join(os.path.basename(p) for p in originais), "->", NOVO)
+    print("atalho OK:", ", ".join(os.path.basename(p) for p in originais), "->", NOVO)
 else:
     for p in originais:
         for ext in (p, p + ".gz"):
@@ -110,14 +106,14 @@ else:
 # 2b) PTZ: o card manda "mover" ao tocar na seta e "parar" ao soltar. Num toque rápido os dois
 #     saem quase juntos (~0,1 s) e a câmera não anda. Aqui o "parar" espera no mínimo PTZ_MIN_MS
 #     desde o "mover", então cada toque dá um passo; segurar continua movendo até soltar.
-PTZ_MIN_MS = 450  # 0 desliga
+PTZ_MIN_MS = 0  # 0 = padrão do card (desligado); >0 faz o "parar" esperar esse tempo
 ptz_anc = re.compile(r"(async executePTZAction\(e,t,n\)\{let r=this\._store\.getCamera\(e\);if\(!r\)return;)(?:/\*LUCAR-ptz\*/.*?/\*fim\*/)?")
 if ptz_anc.search(s):
     bloco = ("/*LUCAR-ptz*/if(n?.phase===`start`)(this._lucarPtz??={})[e]=Date.now();else if(n?.phase===`stop`){"
              "let w=%d-(Date.now()-(this._lucarPtz?.[e]??0));w>0&&await new Promise(q=>setTimeout(q,w))}/*fim*/" % PTZ_MIN_MS
              ) if PTZ_MIN_MS > 0 else ""
     s = ptz_anc.sub(lambda m: m.group(1) + bloco, s, count=1)
-    print("PTZ OK: toque rápido move por", PTZ_MIN_MS, "ms")
+    print("PTZ:", f"parar espera {PTZ_MIN_MS} ms" if PTZ_MIN_MS > 0 else "padrão do card")
 else:
     print("ATENÇÃO: código do PTZ não encontrado; ajuste do toque rápido não aplicado.")
 

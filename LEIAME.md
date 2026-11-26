@@ -17,11 +17,10 @@ Arquivo de idioma original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzid
 - **Card sempre em PT-BR** (`SO_PTBR = True` no script): o card ignora o idioma do perfil,
   do navegador e do app e usa sempre a tradução PT-BR (o app iOS pelo acesso externo chegou a
   mostrar inglês). Com `False`, volta a seguir o idioma do Home Assistant.
-- **PTZ com toque rápido** (`PTZ_MIN_MS = 450` no script): o card manda "mover" ao tocar na
-  seta e "parar" ao soltar; num toque rápido os dois saíam quase juntos (~0,1 s) e a câmera
-  não andava. Agora o "parar" espera no mínimo 0,45 s, então cada toque dá um passo (testado
-  na CAM_AP_SALA: 0,3 s não move; 0,45 s e 0,6 s dão o mesmo passo). Segurar a seta continua
-  movendo até soltar. `0` desliga.
+- **PTZ: padrão do card** (`PTZ_MIN_MS = 0`). O código de PTZ é idêntico ao original (os
+  demais arquivos também batem com o zip do HACS). Com a engine Frigate, o PTZ do card só
+  funciona se a câmera tiver `camera_entity` na configuração do card: ele chama
+  `frigate.ptz` nessa entidade. Sem ela, as setas aparecem (vêm do Frigate) mas não fazem nada.
 - **Editor visual corrigido para o HA 2026.10**: o card usa `ha-md-list`/`ha-md-list-item`,
   que o HA 2026.10 não tem mais, e a lista de câmeras/pastas no editor aparecia empilhada
   (quebrada). A versão oficial tem o mesmo defeito (o `editor-*.js` é idêntico ao zip do HACS).
@@ -46,11 +45,10 @@ python aplicar_ptbr.py "Z:/www/community/advanced-camera-card"
   rodar o script, se um navegador ou celular continuar antigo (ex.: rótulos ou editor), limpe o
   cache uma vez: Edge/Chrome Ctrl+Shift+Del → "Imagens e arquivos em cache"; app iOS/Android:
   Configurações → Companion App → Depuração → "Redefinir cache do frontend".
-- Versões antigas do script usavam `lang-pt-BR-LUCAR1..5.js`. O script tem a opção `ATALHOS`
-  (hoje `True`): esses nomes e o idioma original do card viram atalhos para o `lang-pt-BR.js`.
-  Deixe `True`: pelo acesso externo (Cloudflare), aparelhos com o `shared` antigo em cache
-  pedem o arquivo de idioma original e mostravam o card metade em inglês. Com `False`, ficam
-  só os arquivos originais do card.
+- Opção `ATALHOS` (hoje `True`): o arquivo de idioma original do card vira atalho para o
+  `lang-pt-BR.js`. Pelo acesso externo (Cloudflare), aparelhos com o `shared` original em
+  cache pedem esse arquivo e mostravam o card metade em inglês. Com `False`, ele é restaurado.
+  Os antigos `lang-pt-BR-LUCAR1..5.js` não existem mais (o script os apaga se aparecerem).
 - Se o card ganhar textos novos, eles aparecem em inglês até a tradução ser atualizada.
 - Se o script avisar "função de rótulos não encontrada", o código do card mudou e precisa de ajuste.
 
