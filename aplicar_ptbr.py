@@ -107,6 +107,20 @@ if m:
 else:
     print("ATENÇÃO: função de rótulos não encontrada; o código mudou nesta versão. Peça ajuste ao Claude.")
 
+# 2b) PTZ: o card manda "mover" ao tocar na seta e "parar" ao soltar. Num toque rápido os dois
+#     saem quase juntos (~0,1 s) e a câmera não anda. Aqui o "parar" espera no mínimo PTZ_MIN_MS
+#     desde o "mover", então cada toque dá um passo; segurar continua movendo até soltar.
+PTZ_MIN_MS = 450  # 0 desliga
+ptz_anc = re.compile(r"(async executePTZAction\(e,t,n\)\{let r=this\._store\.getCamera\(e\);if\(!r\)return;)(?:/\*LUCAR-ptz\*/.*?/\*fim\*/)?")
+if ptz_anc.search(s):
+    bloco = ("/*LUCAR-ptz*/if(n?.phase===`start`)(this._lucarPtz??={})[e]=Date.now();else if(n?.phase===`stop`){"
+             "let w=%d-(Date.now()-(this._lucarPtz?.[e]??0));w>0&&await new Promise(q=>setTimeout(q,w))}/*fim*/" % PTZ_MIN_MS
+             ) if PTZ_MIN_MS > 0 else ""
+    s = ptz_anc.sub(lambda m: m.group(1) + bloco, s, count=1)
+    print("PTZ OK: toque rápido move por", PTZ_MIN_MS, "ms")
+else:
+    print("ATENÇÃO: código do PTZ não encontrado; ajuste do toque rápido não aplicado.")
+
 grava(sp, s)
 print("shared OK:", os.path.basename(sp), "(+ .gz)")
 

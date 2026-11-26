@@ -17,6 +17,11 @@ Arquivo de idioma original: `lang-pt-BR-dQc_pOO8.js` (275 de 705 textos traduzid
 - **Card sempre em PT-BR** (`SO_PTBR = True` no script): o card ignora o idioma do perfil,
   do navegador e do app e usa sempre a tradução PT-BR (o app iOS pelo acesso externo chegou a
   mostrar inglês). Com `False`, volta a seguir o idioma do Home Assistant.
+- **PTZ com toque rápido** (`PTZ_MIN_MS = 450` no script): o card manda "mover" ao tocar na
+  seta e "parar" ao soltar; num toque rápido os dois saíam quase juntos (~0,1 s) e a câmera
+  não andava. Agora o "parar" espera no mínimo 0,45 s, então cada toque dá um passo (testado
+  na CAM_AP_SALA: 0,3 s não move; 0,45 s e 0,6 s dão o mesmo passo). Segurar a seta continua
+  movendo até soltar. `0` desliga.
 - **Editor visual corrigido para o HA 2026.10**: o card usa `ha-md-list`/`ha-md-list-item`,
   que o HA 2026.10 não tem mais, e a lista de câmeras/pastas no editor aparecia empilhada
   (quebrada). A versão oficial tem o mesmo defeito (o `editor-*.js` é idêntico ao zip do HACS).
